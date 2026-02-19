@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Calling App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/socket.io.js" defer></script>
+    <script src="/js/main.js" defer></script>
+</head>
+<body>
+    <div class="app-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-video"></i>
+                    <span>CallHub</span>
+                </div>
+            </div>
+
+            <div class="username-section">
+                <input id="username" type="text" class="username-input" placeholder="Enter your name">
+                <button id="create-user" class="btn btn-primary btn-create">
+                    <i class="fas fa-check"></i> Start
+                </button>
+            </div>
+
+            <div class="contacts-section">
+                <h3 class="section-title">Active Contacts</h3>
+                <ul id="allusers" class="contacts-list"></ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <section class="main-content">
+            <div class="video-container">
+                <!-- Remote Video Placeholder -->
+                <div id="remote-placeholder" class="video-placeholder">
+                    <div class="placeholder-content">
+                        <i class="fas fa-video"></i>
+                        <p>Waiting to connect...</p>
+                    </div>
+                </div>
+
+                <!-- Remote Video -->
+                <div class="video-wrapper remote hidden">
+                    <video id="remoteVideo" autoplay playsinline class="video-element"></video>
+                    <div class="video-label">Remote User</div>
+                </div>
+
+                <!-- Local Video Placeholder (PiP) -->
+                <div id="local-placeholder" class="video-placeholder-local hidden">
+                    <div class="placeholder-content">
+                        <i class="fas fa-user"></i>
+                        <p>Your Camera</p>
+                    </div>
+                </div>
+
+                <!-- Local Video (PiP) -->
+                <div class="video-wrapper local hidden">
+                    <video id="localVideo" autoplay muted playsinline class="video-element"></video>
+                    <div class="video-label">You</div>
+                </div>
+            </div>
+
+            <!-- Control Bar -->
+            <div class="control-bar">
+                <button id="mic-btn" class="control-btn" title="Toggle Microphone">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <button id="camera-btn" class="control-btn" title="Toggle Camera">
+                    <i class="fas fa-video"></i>
+                </button>
+                <button id="end-call-btn" class="control-btn btn-danger hidden" title="End Call">
+                    <i class="fas fa-phone-slash"></i>
+                </button>
+                <button id="settings-btn" class="control-btn" title="Settings">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <span id="status-text" class="status-text">Waiting to join...</span>
+            </div>
+        </section>
+    </div>
+
+    <!-- Incoming Call Notification -->
+    <div id="incoming-call-modal" class="call-modal hidden">
+        <div class="call-notification">
+            <div class="call-header">
+                <i class="fas fa-phone-alt"></i>
+                <span>Incoming Call</span>
+            </div>
+            <div class="caller-info">
+                <div class="caller-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h2 id="caller-name" class="caller-name">Caller Name</h2>
+                <p id="incoming-call-type" class="call-status">Video Call</p>
+            </div>
+            <div class="call-actions">
+                <button id="accept-call-btn" class="btn-accept">
+                    <i class="fas fa-phone"></i>
+                    <span>Accept</span>
+                </button>
+                <button id="reject-call-btn" class="btn-reject">
+                    <i class="fas fa-phone-slash"></i>
+                    <span>Decline</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Outgoing Call Notification (Caller's view) -->
+    <div id="outgoing-call-modal" class="call-modal hidden">
+        <div class="call-notification">
+            <div class="call-header">
+                <i class="fas fa-phone-alt"></i>
+                <span>Calling...</span>
+            </div>
+            <div class="caller-info">
+                <div class="caller-avatar calling-animation">
+                    <i class="fas fa-phone"></i>
+                </div>
+                <h2 id="outgoing-user-name" class="caller-name">User Name</h2>
+                <p id="outgoing-status" class="call-status">Ringing...</p>
+            </div>
+            <div class="call-actions">
+                <button id="cancel-call-btn" class="btn-reject">
+                    <i class="fas fa-phone-slash"></i>
+                    <span>Cancel</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call Type Selection Modal -->
+    <div id="call-type-modal" class="call-modal hidden">
+        <div class="call-notification">
+            <div class="call-header">
+                <i class="fas fa-phone-alt"></i>
+                <span>Choose Call Type</span>
+            </div>
+            <div class="caller-info">
+                <h2 id="call-type-user" class="caller-name">User Name</h2>
+                <p class="call-status">How would you like to call?</p>
+            </div>
+            <div class="call-type-options">
+                <button id="video-call-btn" class="call-type-btn">
+                    <i class="fas fa-video"></i>
+                    <span>Video Call</span>
+                </button>
+                <button id="audio-call-btn" class="call-type-btn">
+                    <i class="fas fa-microphone"></i>
+                    <span>Audio Call</span>
+                </button>
+            </div>
+            <button id="close-call-type-btn" class="btn-cancel-call-type">Close</button>
+        </div>
+    </div>
+
+    <!-- Audio element for ring sound -->
+    <audio id="ring-sound" loop>
+        <source src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA==" type="audio/wav">
+    </audio>
+</body>
+</html>
