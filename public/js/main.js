@@ -281,9 +281,9 @@ acceptCallBtn.addEventListener("click", async (e) => {
             try { await pc.addIceCandidate(new RTCIceCandidate(candidate)); } catch (e) { console.error(e); }
         }
 
+        currentPeer = from;
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
-        currentPeer = from;
         socket.emit("answer", { from, to, answer: pc.localDescription });
         caller = [from, to];
 
@@ -447,19 +447,15 @@ socket.on("answer", async ({ from, to, answer }) => {
         localVideo.srcObject = localStream;
         remotePlaceholder.classList.add('hidden');
         remoteVideoWrapper.classList.remove('hidden');
-        localPlaceholder.classList.add('hidden');
-        localVideoWrapper.classList.remove('hidden');
         screenShareBtn.classList.remove('hidden');
     } else {
         // For audio calls, show placeholder instead of video
-        localPlaceholder.classList.remove('hidden');
-        localVideoWrapper.classList.add('hidden');
         remotePlaceholder.classList.remove('hidden');
         remoteVideoWrapper.classList.add('hidden');
         screenShareBtn.classList.add('hidden');
     }
 
-    statusText.textContent = `In call with ${from}`;
+    statusText.textContent = `In call with ${to}`;
     socket.emit("end-call", { from, to });
     caller = [from, to];
 });
@@ -508,10 +504,10 @@ socket.on("call-cancelled", ({ from, to }) => {
 const startCall = async (user) => {
     console.log({ user })
     const pc = PeerConnection.getInstance();
+    currentPeer = user;
     const offer = await pc.createOffer();
     console.log({ offer })
     await pc.setLocalDescription(offer);
-    currentPeer = user;
     showOutgoingCallNotification(user);
     statusText.textContent = `Calling ${user}...`;
     socket.emit("offer", { from: username.value, to: user, offer: pc.localDescription, callType: currentCallType });
@@ -524,11 +520,9 @@ const endCall = () => {
     incomingCallData = null;
     stopRingSound();
 
-    // Reset video visibility
+    // Reset video visibility (Keep local video active)
     remotePlaceholder.classList.remove('hidden');
     remoteVideoWrapper.classList.add('hidden');
-    localPlaceholder.classList.add('hidden');
-    localVideoWrapper.classList.add('hidden');
 
     // Reset camera & screen share button visibility
     cameraBtn.style.display = 'inline-flex';
