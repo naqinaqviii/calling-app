@@ -360,12 +360,22 @@ closeCallTypeBtn.addEventListener("click", (e) => {
 
 // handle browser events
 createUserBtn.addEventListener("click", (e) => {
-    if (username.value !== "") {
-        const usernameContainer = document.querySelector(".username-section");
-        socket.emit("join-user", username.value);
+    if (username.value.trim() !== "") {
+        const authOverlay = document.getElementById("auth-overlay");
+        const appWrapper = document.getElementById("app-wrapper");
+
+        socket.emit("join-user", username.value.trim());
         statusText.textContent = "Connected ✓";
-        usernameContainer.style.opacity = '0.6';
-        createUserBtn.style.pointerEvents = 'none';
+
+        // Hide auth screen and show main app
+        authOverlay.classList.add("hidden");
+        appWrapper.classList.remove("hidden");
+    }
+});
+
+username.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+        createUserBtn.click();
     }
 });
 

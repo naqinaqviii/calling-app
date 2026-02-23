@@ -71,6 +71,15 @@ io.on("connection", (socket) => {
             io.to(allusers[to].id).emit("icecandidate", candidate);
         }
     });
+
+    socket.on("disconnect", () => {
+        const disconnectedUser = Object.keys(allusers).find(username => allusers[username].id === socket.id);
+        if (disconnectedUser) {
+            console.log(`${disconnectedUser} disconnected`);
+            delete allusers[disconnectedUser];
+            io.emit("joined", allusers); // refresh active users list
+        }
+    });
 })
 
 server.listen(9000, () => {

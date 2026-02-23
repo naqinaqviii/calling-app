@@ -12,7 +12,31 @@
 </head>
 
 <body>
-    <div class="app-wrapper">
+    <!-- Auth Overlay (MS Teams Login Style) -->
+    <div id="auth-overlay" class="auth-overlay">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <i class="fas fa-video"></i>
+                <h2>CallHub Teams</h2>
+            </div>
+            <p class="auth-subtitle">Sign in to your workspace</p>
+            <div class="auth-form">
+                <div class="input-group">
+                    <i class="fas fa-user input-icon"></i>
+                    <input id="username" type="text" class="auth-input" placeholder="Enter your display name"
+                        autocomplete="off">
+                </div>
+                <button id="create-user" class="btn btn-primary btn-auth">
+                    Join Workspace <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+            <div class="auth-footer">
+                <p>By joining, you agree to our Terms of Service</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-wrapper hidden" id="app-wrapper">
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
@@ -20,13 +44,6 @@
                     <i class="fas fa-video"></i>
                     <span>CallHub</span>
                 </div>
-            </div>
-
-            <div class="username-section">
-                <input id="username" type="text" class="username-input" placeholder="Enter your name">
-                <button id="create-user" class="btn btn-primary btn-create">
-                    <i class="fas fa-check"></i> Start
-                </button>
             </div>
 
             <div class="contacts-section">
