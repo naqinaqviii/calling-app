@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <script src="/js/socket.io.js" defer></script>
     <script src="/js/main.js" defer></script>
 </head>
+
 <body>
     <div class="app-wrapper">
         <!-- Sidebar -->
@@ -72,6 +74,9 @@
                 </button>
                 <button id="camera-btn" class="control-btn" title="Toggle Camera">
                     <i class="fas fa-video"></i>
+                </button>
+                <button id="screen-share-btn" class="control-btn hidden" title="Screen Share">
+                    <i class="fas fa-desktop"></i>
                 </button>
                 <button id="end-call-btn" class="control-btn btn-danger hidden" title="End Call">
                     <i class="fas fa-phone-slash"></i>
@@ -165,7 +170,9 @@
 
     <!-- Audio element for ring sound -->
     <audio id="ring-sound" loop>
-        <source src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA==" type="audio/wav">
+        <source src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA=="
+            type="audio/wav">
     </audio>
 </body>
+
 </html>

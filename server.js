@@ -66,10 +66,10 @@ io.on("connection", (socket) => {
         io.to(allusers[to].id).emit("call-ended", caller);
     })
 
-    socket.on("icecandidate", candidate => {
-        console.log({ candidate });
-        //broadcast to other peers
-        socket.broadcast.emit("icecandidate", candidate);
+    socket.on("icecandidate", ({ candidate, to }) => {
+        if (allusers[to]) {
+            io.to(allusers[to].id).emit("icecandidate", candidate);
+        }
     });
 })
 
