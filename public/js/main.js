@@ -550,8 +550,12 @@ const startMyVideo = async () => {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
         console.log({ stream });
         localStream = stream;
-        // Don't show local video until connected
-        // localVideo.srcObject = stream;
+
+        // Show local video up front
+        localVideo.srcObject = stream;
+        localPlaceholder.classList.add('hidden');
+        localVideoWrapper.classList.remove('hidden');
+
         statusText.textContent = "Ready to connect";
     } catch (error) {
         statusText.textContent = "⚠ Camera/Mic permission denied";
