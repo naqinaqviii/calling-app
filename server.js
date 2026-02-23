@@ -24,6 +24,11 @@ app.get("/", (req, res) => {
     res.sendFile(join(__dirname + "/app/index.html"));
 });
 
+app.get("/admin", (req, res) => {
+    console.log("GET Request /admin");
+    res.sendFile(join(__dirname + "/app/admin.html"));
+});
+
 // handle socket connections
 io.on("connection", (socket) => {
     console.log(`Someone connected to socket server and socket id is ${socket.id}`);
@@ -34,25 +39,25 @@ io.on("connection", (socket) => {
         io.emit("joined", allusers);
     });
 
-    socket.on("offer", ({from, to, offer, callType}) => {
-        console.log({from , to, offer, callType });
-        io.to(allusers[to].id).emit("offer", {from, to, offer, callType});
+    socket.on("offer", ({ from, to, offer, callType }) => {
+        console.log({ from, to, offer, callType });
+        io.to(allusers[to].id).emit("offer", { from, to, offer, callType });
     });
 
-    socket.on("answer", ({from, to, answer}) => {
-       io.to(allusers[from].id).emit("answer", {from, to, answer});
+    socket.on("answer", ({ from, to, answer }) => {
+        io.to(allusers[from].id).emit("answer", { from, to, answer });
     });
 
-    socket.on("end-call", ({from, to}) => {
-        io.to(allusers[to].id).emit("end-call", {from, to});
+    socket.on("end-call", ({ from, to }) => {
+        io.to(allusers[to].id).emit("end-call", { from, to });
     });
 
-    socket.on("call-rejected", ({from, to, rejectingUser}) => {
-        io.to(allusers[from].id).emit("call-rejected", {from: rejectingUser, to: from});
+    socket.on("call-rejected", ({ from, to, rejectingUser }) => {
+        io.to(allusers[from].id).emit("call-rejected", { from: rejectingUser, to: from });
     });
 
-    socket.on("call-cancelled", ({from, to}) => {
-        io.to(allusers[to].id).emit("call-cancelled", {from, to});
+    socket.on("call-cancelled", ({ from, to }) => {
+        io.to(allusers[to].id).emit("call-cancelled", { from, to });
     });
 
     socket.on("call-ended", caller => {
@@ -65,7 +70,7 @@ io.on("connection", (socket) => {
         console.log({ candidate });
         //broadcast to other peers
         socket.broadcast.emit("icecandidate", candidate);
-    }); 
+    });
 })
 
 server.listen(9000, () => {
